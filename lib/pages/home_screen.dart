@@ -1,4 +1,4 @@
-import 'package:community_connect/data/dummy_locations.dart';
+import 'package:community_connect/data/dummy_events.dart';
 import 'package:community_connect/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 
