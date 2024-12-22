@@ -14,9 +14,10 @@ class EventDialog extends StatelessWidget {
     return IntrinsicHeight(
       child: Container(
         decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
             color: Colors.white,
             border: Border.all(color: Colors.grey[200] ?? Colors.grey)),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
