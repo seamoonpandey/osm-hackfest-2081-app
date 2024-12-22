@@ -1,11 +1,12 @@
-import 'package:community_connect/model/event.dart';
-import 'package:community_connect/widgets/event_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:community_connect/model/event.dart';
+import 'package:community_connect/widgets/event_dialog.dart';
 
 class MapWidget extends StatefulWidget {
   final List<Event> events;
+
   const MapWidget({this.events = const [], super.key});
 
   @override
@@ -17,7 +18,7 @@ class _MapWidgetState extends State<MapWidget> {
   final _mapController = MapController();
   Event? selectedEvent;
   double currentZoom = 13.0; // Initial zoom level
-  final double labelZoomThreshold = 15.0; // Minimum zoom to show labels
+  final double labelZoomThreshold = 13; // Minimum zoom to show labels
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class _MapWidgetState extends State<MapWidget> {
                 selectedEvent = null;
               });
             },
-            onPositionChanged: (MapCamera position, bool hasGesture) {
+            onPositionChanged: (position, hasGesture) {
               // Listen for zoom level changes
               if (position.zoom != currentZoom) {
                 setState(() {
@@ -49,53 +50,55 @@ class _MapWidgetState extends State<MapWidget> {
               userAgentPackageName: 'com.example.app',
             ),
             MarkerLayer(
-              markers: [
-                ...widget.events.map((event) {
-                  return Marker(
-                    width: 140.0,
-                    height: 140.0,
-                    point: LatLng(event.lat, event.lng),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedEvent = event; // Show popup for the event
-                        });
-                      },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Only show the label if zoom is sufficient
-                          if (currentZoom >= labelZoomThreshold)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 4, horizontal: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.7),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                event.title,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                              ),
+              markers: widget.events.map((event) {
+                // Calculate marker size dynamically based on zoom
+                final markerSize = (currentZoom / 13.0) * 30.0;
+
+                return Marker(
+                  point: LatLng(event.lat, event.lng),
+                  width: 3 * markerSize,
+                  height: 2 * markerSize,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedEvent = event; // Show popup for the event
+                      });
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (currentZoom >= labelZoomThreshold)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 4,
+                              horizontal: 8,
                             ),
-                          const SizedBox(height: 4),
-                          const Icon(
-                            Icons.location_pin,
-                            size: 30,
-                            color: Colors.red,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              event.title,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                        ],
-                      ),
+                        const SizedBox(height: 4),
+                        Icon(
+                          Icons.location_pin,
+                          size: markerSize,
+                          color: Colors.red,
+                        ),
+                      ],
                     ),
-                  );
-                }),
-              ],
+                  ),
+                );
+              }).toList(),
             ),
           ],
         ),
