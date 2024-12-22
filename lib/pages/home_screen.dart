@@ -1,5 +1,6 @@
 import 'package:community_connect/data/dummy_events.dart';
 import 'package:community_connect/pages/events_screen.dart';
+import 'package:community_connect/pages/leaderboard_screen.dart';
 import 'package:community_connect/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     MapWidget(events: events),
     // Add your other pages here
     const EventsScreen(),
-    const Center(child: Text('Leaderboard Page')),
+    const LeaderboardScreen(),
     const Center(child: Text('Profile Page')),
   ];
 
