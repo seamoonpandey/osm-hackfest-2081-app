@@ -6,7 +6,7 @@ class User {
   User({
     required this.id,
     required this.name,
-  }) : username = name.split(' ')[0].toLowerCase();
+  }) : username = '${name.split(' ')[0].toLowerCase()}${id.substring(0, 3)}';
 
   Map<String, dynamic> toJson() {
     return {
