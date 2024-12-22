@@ -4,6 +4,7 @@ import 'package:community_connect/model/event.dart';
 import 'package:community_connect/pages/events_screen.dart';
 import 'package:community_connect/pages/leaderboard_screen.dart';
 import 'package:community_connect/pages/profile_screen.dart';
+import 'package:community_connect/widgets/form.dart';
 import 'package:community_connect/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -81,10 +82,22 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Colors.white,
               title: [
                 const Text('Community Connect'),
-                const Text('Nearby Events'),
+                const Text('Events'),
                 const Text('Local Leaderboard'),
                 null,
               ][_currentIndex],
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const EventForm(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(
