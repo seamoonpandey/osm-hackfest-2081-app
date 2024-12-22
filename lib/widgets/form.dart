@@ -12,14 +12,6 @@ class EventForm extends StatefulWidget {
   State<EventForm> createState() => _EventFormState();
 }
 
-// {
-//   "title": "Sample Event",
-//   "longitude": 77.5946,
-//   "latitude": 12.9716,
-//   "description": "A sample event happening tonight!",
-//   "startTime": "2024-12-22T23:00:00",
-//   "endTime": "2024-12-23T01:00:00"
-// }
 class _EventFormState extends State<EventForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
@@ -48,26 +40,57 @@ class _EventFormState extends State<EventForm> {
 
     try {
       final pref = await SharedPreferences.getInstance();
-
-      // Get the token from shared preferences
       final token = pref.getString('token');
-      // Make a POST request to the API
-      await http.post(Uri.parse('http://localhost:3000/events'),
-          body: jsonEncode(event),
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      // Show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Event created successfully')),
+
+      final response = await http.post(
+        Uri.parse('http://localhost:3000/events'),
+        body: jsonEncode(event),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event created successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to create event')),
+        );
+      }
     } catch (e) {
-      // Show an error message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to create event')),
       );
+    }
+  }
+
+  Future<void> _selectDateTime(
+      BuildContext context, TextEditingController controller) async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (date != null) {
+      final time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (time != null) {
+        final dateTime = DateTime(
+          date.year,
+          date.month,
+          date.day,
+          time.hour,
+          time.minute,
+        );
+        controller.text = dateTime.toIso8601String();
+      }
     }
   }
 
@@ -76,104 +99,136 @@ class _EventFormState extends State<EventForm> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Form'),
+        centerTitle: true,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
-            shrinkWrap: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
                 height: 300,
-                child: MapWidget(
-                  onLocationSelected: (p0) {
-                    _longitudeController.text = p0.longitude.toString();
-                    _latitudeController.text = p0.latitude.toString();
-                  },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: MapWidget(
+                    onLocationSelected: (p0) {
+                      _longitudeController.text = p0.longitude.toString();
+                      _latitudeController.text = p0.latitude.toString();
+                    },
+                  ),
                 ),
               ),
-              TextFormField(
+              const SizedBox(height: 16),
+              _buildTextField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
+                labelText: 'Title',
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter a title'
+                    : null,
               ),
-              TextFormField(
-                controller: _longitudeController,
-                decoration: const InputDecoration(labelText: 'Longitude'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a longitude';
-                  }
-                  return null;
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildTextField(
+                      controller: _longitudeController,
+                      labelText: 'Longitude',
+                      keyboardType: TextInputType.number,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Enter longitude'
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _buildTextField(
+                      controller: _latitudeController,
+                      labelText: 'Latitude',
+                      keyboardType: TextInputType.number,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Enter latitude'
+                          : null,
+                    ),
+                  ),
+                ],
               ),
-              TextFormField(
-                controller: _latitudeController,
-                decoration: const InputDecoration(labelText: 'Latitude'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a latitude';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
+              _buildTextField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
-                  }
-                  return null;
-                },
+                labelText: 'Description',
+                maxLines: 3,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter a description'
+                    : null,
               ),
-              TextFormField(
-                controller: _startTimeController,
-                decoration: const InputDecoration(labelText: 'Start Time'),
-                keyboardType: TextInputType.datetime,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a start time';
-                  }
-                  return null;
-                },
+              GestureDetector(
+                onTap: () => _selectDateTime(context, _startTimeController),
+                child: AbsorbPointer(
+                  child: _buildTextField(
+                    controller: _startTimeController,
+                    labelText: 'Start Time',
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Enter start time'
+                        : null,
+                  ),
+                ),
               ),
-              TextFormField(
-                controller: _endTimeController,
-                decoration: const InputDecoration(labelText: 'End Time'),
-                keyboardType: TextInputType.datetime,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an end time';
-                  }
-                  return null;
-                },
+              GestureDetector(
+                onTap: () => _selectDateTime(context, _endTimeController),
+                child: AbsorbPointer(
+                  child: _buildTextField(
+                    controller: _endTimeController,
+                    labelText: 'End Time',
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Enter end time'
+                        : null,
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    debugPrint('Title: ${_titleController.text}');
-                    debugPrint('Longitude: ${_longitudeController.text}');
-                    debugPrint('Latitude: ${_latitudeController.text}');
-                    debugPrint('Description: ${_descriptionController.text}');
-                    debugPrint('Start Time: ${_startTimeController.text}');
-                    debugPrint('End Time: ${_endTimeController.text}');
+                    createEvent();
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
                 child: const Text('Submit'),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          filled: true,
+          fillColor: Colors.grey[200],
+        ),
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        validator: validator,
       ),
     );
   }
