@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:community_connect/pages/auth/register.dart';
+import 'package:community_connect/pages/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,6 +18,58 @@ class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final response = await http.post(
+          Uri.parse('http://localhost:3000/auth/login'),
+          body: jsonEncode({
+            'email': _emailController.text,
+            'password': _passwordController.text,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ).timeout(const Duration(seconds: 10));
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+          // Save each item separately in SharedPreferences
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', responseData['token']);
+          await prefs.setString('user_id', responseData['user']['id']);
+          await prefs.setString('user_name', responseData['user']['name']);
+          await prefs.setString('user_email', responseData['user']['email']);
+
+          await prefs.setInt('stats_hosted', responseData['stats']['hosted']);
+          await prefs.setInt(
+              'stats_participated', responseData['stats']['participated']);
+          await prefs.setInt(
+              'stats_attended', responseData['stats']['attended']);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login Successful')),
+          );
+
+          // Optionally, navigate to the home screen
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return const HomeScreen();
+          }));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login Failed: ${response.body}')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +90,7 @@ class _LoginState extends State<Login> {
               const Text(
                 'Login',
                 style: TextStyle(
-                  color: Colors.black87,
+                  color: Color.fromARGB(221, 24, 18, 18),
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
@@ -132,14 +189,7 @@ class _LoginState extends State<Login> {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Handle successful login
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Login Successful')),
-                    );
-                  }
-                },
+                onPressed: _login,
                 child: const Text(
                   'Login',
                   style: TextStyle(
