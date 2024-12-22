@@ -37,6 +37,10 @@ class _MapWidgetState extends State<MapWidget> {
     _mapController.move(center, currentZoom);
   }
 
+  void centerMapToCurrentLocation() {
+    _mapController.move(point, currentZoom);
+  }
+
   @override
   Widget build(BuildContext context) {
     final markerSize = (currentZoom / 13.0) * 30.0;
@@ -163,6 +167,14 @@ class _MapWidgetState extends State<MapWidget> {
             right: 20,
             child: EventDialog(event: selectedEvent!),
           ),
+        Positioned(
+          bottom: 20,
+          right: 20,
+          child: FloatingActionButton(
+            onPressed: centerMapToCurrentLocation,
+            child: const Icon(Icons.gps_fixed),
+          ),
+        ),
       ],
     );
   }
