@@ -1,3 +1,4 @@
+import 'package:community_connect/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
+      body: Column(
         children: [
           SizedBox(
             height: 300,
@@ -62,56 +63,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                height: 450,
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Zara Dar',
-                        style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff555555))),
-                    SizedBox(height: 18),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Chip(
-                          label: Column(
-                            children: [
-                              Text('Event Hosted',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                              Text('11'),
-                            ],
+                        const Text('Zara Dar',
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xff555555))),
+                        const SizedBox(height: 18),
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Chip(
+                              label: Column(
+                                children: [
+                                  Text('Event Hosted',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold)),
+                                  Text('11'),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Chip(
+                              label: Column(
+                                children: [
+                                  Text('Event Attended',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold)),
+                                  Text('10'),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: const SizedBox(
+                            height: 420, // Or any appropriate height
+                            child: MapWidget(),
                           ),
                         ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Chip(
-                          label: Column(
-                            children: [
-                              Text('Event Attended',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                              Text('10'),
-                            ],
-                          ),
-                        )
                       ],
-                    )
-                  ],
-                ),
-              )
-            ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

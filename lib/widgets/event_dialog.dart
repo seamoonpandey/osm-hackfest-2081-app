@@ -38,7 +38,7 @@ class EventDialog extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Start Time: ${_formatTime(event.startTime)}',
+                'Start Time: ${formatTime(event.startTime)}',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -46,7 +46,7 @@ class EventDialog extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'End Time: ${_formatTime(event.endTime)}',
+                'End Time: ${formatTime(event.endTime)}',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -58,9 +58,9 @@ class EventDialog extends StatelessWidget {
       ),
     );
   }
+}
 
-  String _formatTime(DateTime time) {
-    // Use intl to format time
-    return DateFormat('hh:mm a').format(time); // Example: 10:00 AM
-  }
+String formatTime(DateTime time) {
+  // Use intl to format time
+  return DateFormat('hh:mm a').format(time); // Example: 10:00 AM
 }

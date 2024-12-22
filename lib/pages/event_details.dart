@@ -1,4 +1,5 @@
 import 'package:community_connect/model/event.dart';
+import 'package:community_connect/widgets/event_dialog.dart';
 import 'package:flutter/material.dart';
 
 class EventDetails extends StatefulWidget {
@@ -43,7 +44,7 @@ class _EventDetailsState extends State<EventDetails> {
                 const Icon(Icons.access_time, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
-                  'Start: ${widget.event.startTime}',
+                  'Start: ${formatTime(widget.event.startTime)}',
                   style: const TextStyle(fontSize: 16),
                 ),
               ],
@@ -54,7 +55,7 @@ class _EventDetailsState extends State<EventDetails> {
                 const Icon(Icons.access_time_filled, color: Colors.green),
                 const SizedBox(width: 8),
                 Text(
-                  'End: ${widget.event.endTime}',
+                  'End: ${formatTime(widget.event.endTime)}',
                   style: const TextStyle(fontSize: 16),
                 ),
               ],
