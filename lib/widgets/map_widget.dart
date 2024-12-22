@@ -22,6 +22,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final markerSize = (currentZoom / 13.0) * 30.0;
     return Stack(
       children: [
         FlutterMap(
@@ -49,10 +50,19 @@ class _MapWidgetState extends State<MapWidget> {
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.example.app',
             ),
-            MarkerLayer(
-              markers: widget.events.map((event) {
+            MarkerLayer(markers: [
+              Marker(
+                point: point,
+                width: markerSize,
+                height: markerSize,
+                child: const Icon(
+                  Icons.person_pin_circle,
+                  color: Colors.blue,
+                  size: 20,
+                ),
+              ),
+              ...widget.events.map((event) {
                 // Calculate marker size dynamically based on zoom
-                final markerSize = (currentZoom / 13.0) * 30.0;
 
                 return Marker(
                   point: LatLng(event.lat, event.lng),
@@ -98,8 +108,8 @@ class _MapWidgetState extends State<MapWidget> {
                     ),
                   ),
                 );
-              }).toList(),
-            ),
+              })
+            ]),
           ],
         ),
         if (selectedEvent != null)
