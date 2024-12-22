@@ -6,8 +6,7 @@ class User {
   User({
     required this.id,
     required this.name,
-    required this.username,
-  });
+  }) : username = name.split(' ')[0].toLowerCase();
 
   Map<String, dynamic> toJson() {
     return {
@@ -21,7 +20,6 @@ class User {
     return User(
       id: json['id'].toString(),
       name: json['name'] as String,
-      username: json['username'] as String,
     );
   }
 }
