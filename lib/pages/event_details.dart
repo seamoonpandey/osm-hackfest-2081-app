@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:community_connect/model/event.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EventDetails extends StatefulWidget {
   final Event event;
@@ -20,6 +21,30 @@ class _EventDetailsState extends State<EventDetails> {
   void initState() {
     super.initState();
     _fetchAddress();
+  }
+
+  Future<void> _participate() async {
+    try {
+      final pref = await SharedPreferences.getInstance();
+      final response = await http.post(
+          Uri.parse('http://localhost:3000/participate'),
+          body: jsonEncode({'eventId': widget.event.id}),
+          headers: {
+            'Authorization': 'Bearer ${pref.getString('token')}',
+            'Content-Type': 'application/json',
+          }).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        _showParticipationDialog('Participation successful!');
+        final count = pref.getInt('stats_participated') ?? 0;
+        final int newCount = count + 1;
+        await pref.setInt('stats_participated', newCount);
+      } else {
+        _showParticipationDialog('Failed to participate');
+      }
+    } catch (error) {
+      _showParticipationDialog('Error participating in event: $error');
+    }
   }
 
   Future<void> _fetchAddress() async {
@@ -47,6 +72,47 @@ class _EventDetailsState extends State<EventDetails> {
         _isLoading = false;
       });
     }
+  }
+
+  void _showParticipationDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                message,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -114,46 +180,7 @@ class _EventDetailsState extends State<EventDetails> {
             backgroundColor: Colors.green,
             foregroundColor: Colors.white,
           ),
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => Dialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'Participation successful!',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
+          onPressed: _participate,
           child: const Text('Participate'),
         ),
       ),
