@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:community_connect/constant.dart';
 import 'package:community_connect/model/event.dart';
 import 'package:community_connect/pages/events_screen.dart';
 import 'package:community_connect/pages/leaderboard_screen.dart';
@@ -55,8 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<List<Event>> fetchEvents() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://localhost:3000/listevents'), headers: {
+      final response =
+          await http.get(Uri.parse('$API_URL/listevents'), headers: {
         'Content-Type': 'application/json',
       }).timeout(const Duration(seconds: 10));
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:community_connect/constant.dart';
 import 'package:community_connect/model/event.dart';
 import 'package:community_connect/widgets/event_dialog.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,8 @@ class _EventsScreenState extends State<EventsScreen> {
   Future<void> fetchEvents() async {
     try {
       // Fetch events from the server
-      final response = await http
-          .get(Uri.parse('http://localhost:3000/listevents'), headers: {
+      final response =
+          await http.get(Uri.parse('$API_URL/listevents'), headers: {
         'Content-Type': 'application/json',
       }).timeout(const Duration(seconds: 10));
 

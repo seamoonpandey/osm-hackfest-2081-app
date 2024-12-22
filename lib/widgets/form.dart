@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:community_connect/constant.dart';
 import 'package:community_connect/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -43,7 +44,7 @@ class _EventFormState extends State<EventForm> {
       final token = pref.getString('token');
 
       final response = await http.post(
-        Uri.parse('http://localhost:3000/events'),
+        Uri.parse('$API_URL/events'),
         body: jsonEncode(event),
         headers: {
           'Content-Type': 'application/json',

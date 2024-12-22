@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:community_connect/constant.dart';
 import 'package:community_connect/pages/auth/register.dart';
 import 'package:community_connect/pages/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
@@ -23,7 +24,7 @@ class _LoginState extends State<Login> {
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:3000/auth/login'),
+          Uri.parse('$API_URL/auth/login'),
           body: jsonEncode({
             'email': _emailController.text,
             'password': _passwordController.text,

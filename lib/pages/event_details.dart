@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:community_connect/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:community_connect/model/event.dart';
@@ -26,8 +27,7 @@ class _EventDetailsState extends State<EventDetails> {
   Future<void> _participate() async {
     try {
       final pref = await SharedPreferences.getInstance();
-      final response = await http.post(
-          Uri.parse('http://localhost:3000/participate'),
+      final response = await http.post(Uri.parse('$API_URL/participate'),
           body: jsonEncode({'eventId': widget.event.id}),
           headers: {
             'Authorization': 'Bearer ${pref.getString('token')}',

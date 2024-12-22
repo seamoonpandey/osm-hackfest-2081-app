@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:community_connect/constant.dart';
 import 'package:community_connect/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -14,8 +15,8 @@ class LeaderboardScreen extends StatefulWidget {
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
   Future<List<User>> fetchLeaderboard() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://localhost:3000/leaderboard'), headers: {
+      final response =
+          await http.get(Uri.parse('$API_URL/leaderboard'), headers: {
         'Content-Type': 'application/json',
       }).timeout(const Duration(seconds: 10));
 
