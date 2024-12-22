@@ -1,4 +1,5 @@
 import 'package:community_connect/data/dummy_events.dart';
+import 'package:community_connect/pages/events_screen.dart';
 import 'package:community_connect/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
     MapWidget(events: events),
     // Add your other pages here
-    const Center(child: Text('Events Page')),
+    const EventsScreen(),
     const Center(child: Text('Leaderboard Page')),
     const Center(child: Text('Profile Page')),
   ];
@@ -29,6 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xfff6f6f6),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: [
+          const Text('Community Connect'),
+          const Text('Nearby Events'),
+          const Text('Local Leaderboard'),
+          const Text('Profile'),
+        ][_currentIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         fixedColor: Colors.black,
         currentIndex: _currentIndex,
