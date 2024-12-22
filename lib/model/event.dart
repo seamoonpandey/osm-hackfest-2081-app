@@ -1,5 +1,5 @@
 class Event {
-  final int id;
+  final String id;
   final double lat;
   final double lng;
   final DateTime startTime;
