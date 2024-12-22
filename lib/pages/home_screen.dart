@@ -55,8 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<List<Event>> fetchEvents() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://localhost:3000/events'), headers: {
+      final response = await http
+          .get(Uri.parse('http://localhost:3000/listevents'), headers: {
         'Content-Type': 'application/json',
       }).timeout(const Duration(seconds: 10));
 

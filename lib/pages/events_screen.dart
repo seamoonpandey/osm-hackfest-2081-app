@@ -23,8 +23,8 @@ class _EventsScreenState extends State<EventsScreen> {
   Future<void> fetchEvents() async {
     try {
       // Fetch events from the server
-      final response =
-          await http.get(Uri.parse('http://localhost:3000/events'), headers: {
+      final response = await http
+          .get(Uri.parse('http://localhost:3000/listevents'), headers: {
         'Content-Type': 'application/json',
       }).timeout(const Duration(seconds: 10));
 

@@ -56,6 +56,7 @@ class _EventFormState extends State<EventForm> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Event created successfully')),
         );
+        Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to create event')),
@@ -99,7 +100,6 @@ class _EventFormState extends State<EventForm> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Form'),
-        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -193,9 +193,11 @@ class _EventFormState extends State<EventForm> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.pink,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 child: const Text('Submit'),
