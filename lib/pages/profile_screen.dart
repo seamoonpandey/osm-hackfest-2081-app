@@ -1,5 +1,6 @@
 import 'package:community_connect/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -9,7 +10,28 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // This widget is the root of your application.
+  int hosted = 0;
+  int attended = 0;
+  int participated = 0;
+  String name = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      hosted = prefs.getInt('stats_hosted') ?? 0; // Default to 0 if not set
+      attended = prefs.getInt('stats_attended') ?? 0; // Default to 0 if not set
+      participated =
+          prefs.getInt('stats_participated') ?? 0; // Default to 0 if not set
+      name = prefs.getString('user_name') ?? ''; // Default to '' if not set
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,40 +96,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text('Zara Dar',
-                            style: TextStyle(
+                        Text(name,
+                            style: const TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xff555555))),
                         const SizedBox(height: 18),
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Chip(
                               label: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text('Event Hosted',
+                                  const Text('Hosted',
                                       style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.bold)),
-                                  Text('11'),
+                                  Text('$hosted'),
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 20,
                             ),
                             Chip(
                               label: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text('Event Attended',
+                                  const Text('Attended',
                                       style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.bold)),
-                                  Text('10'),
+                                  Text('$attended'),
                                 ],
                               ),
-                            )
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Chip(
+                              label: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text('Participated',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold)),
+                                  Text('$participated'),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 20),
