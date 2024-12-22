@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:community_connect/model/event.dart';
 import 'package:community_connect/widgets/event_dialog.dart';
@@ -15,13 +16,75 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapWidgetState extends State<MapWidget> {
-  LatLng point = const LatLng(28.2096, 83.9856); // Initial user location
+  LatLng point = const LatLng(28.2096, 83.9856); // Default location
   final _mapController = MapController();
   Event? selectedEvent;
   double currentZoom = 13.0; // Initial zoom level
   final double labelZoomThreshold = 13.0; // Zoom level to display labels
-
   List<LatLng> routePoints = []; // Polyline points for the route
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentLocation(); // Fetch the user's location on initialization
+  }
+
+  Future<void> _fetchCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location services are disabled. Please enable them.'),
+        ),
+      );
+      return;
+    }
+
+    // Check for location permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Location permission denied.'),
+          ),
+        );
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Location permissions are permanently denied. Please allow them in settings.'),
+        ),
+      );
+      return;
+    }
+
+    // Get the current location
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      setState(() {
+        point = LatLng(position.latitude, position.longitude);
+        centerMapToCurrentLocation();
+      });
+      _mapController.move(
+          point, currentZoom); // Center the map on the current location
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to fetch location.')),
+      );
+    }
+  }
 
   void navigateToEvent(Event event) {
     final LatLng eventLocation = LatLng(event.lat, event.lng);
@@ -166,7 +229,7 @@ class _MapWidgetState extends State<MapWidget> {
           bottom: 20,
           right: 20,
           child: FloatingActionButton(
-            onPressed: centerMapToCurrentLocation,
+            onPressed: _fetchCurrentLocation,
             backgroundColor: Colors.blue,
             child: const Icon(Icons.my_location, color: Colors.white),
           ),
