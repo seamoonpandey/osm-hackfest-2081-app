@@ -15,21 +15,31 @@ class _MapWidgetState extends State<MapWidget> {
   LatLng point = const LatLng(28.2096, 83.9856);
   final _mapController = MapController();
   Event? selectedEvent;
+  double currentZoom = 13.0; // Initial zoom level
+  final double labelZoomThreshold = 15.0; // Minimum zoom to show labels
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Main Map
         FlutterMap(
           mapController: _mapController,
           options: MapOptions(
-            initialCenter: point,
-            initialZoom: 13.0,
-            onTap: (tapPosition, point) {
+            initialCenter: point, // Center the map on the initial point
+            initialZoom: currentZoom, // Use the initial zoom level
+            onTap: (_, __) {
+              // Clear selected event when tapping on the map
               setState(() {
-                selectedEvent = null; // Clear the popup when the map is tapped
+                selectedEvent = null;
               });
+            },
+            onPositionChanged: (MapCamera position, bool hasGesture) {
+              // Listen for zoom level changes
+              if (position.zoom != currentZoom) {
+                setState(() {
+                  currentZoom = position.zoom;
+                });
+              }
             },
           ),
           children: [
@@ -39,42 +49,41 @@ class _MapWidgetState extends State<MapWidget> {
             ),
             MarkerLayer(
               markers: [
-                // Event Markers with enhanced style
                 ...widget.events.map((event) {
                   return Marker(
-                    width: 100.0,
-                    height: 100.0,
+                    width: 140.0,
+                    height: 140.0,
                     point: LatLng(event.lat, event.lng),
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedEvent = event; // Show the popup for the event
+                          selectedEvent = event; // Show popup for the event
                         });
                       },
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Label with improved style
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.7),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              event.title,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
+                          // Only show the label if zoom is sufficient
+                          if (currentZoom >= labelZoomThreshold)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 4, horizontal: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
+                              child: Text(
+                                event.title,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                          ),
                           const SizedBox(height: 4),
-                          // Marker Icon
                           const Icon(
                             Icons.location_pin,
                             size: 30,
@@ -89,7 +98,6 @@ class _MapWidgetState extends State<MapWidget> {
             ),
           ],
         ),
-        // Popup Container for Selected Event
         if (selectedEvent != null)
           Positioned(
             bottom: 20,
