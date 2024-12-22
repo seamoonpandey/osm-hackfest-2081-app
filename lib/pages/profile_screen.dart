@@ -12,17 +12,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: const Color(0xff555555),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
-        ),
-      ),
-      body: Stack(
-        alignment: Alignment.center,
+      body: ListView(
         children: [
+          SizedBox(
+            height: 300,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CustomPaint(
+                  painter: HeaderCurvedContainer(),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text(
+                          "@ZARA",
+                          style: TextStyle(
+                              fontSize: 35,
+                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        width: MediaQuery.of(context).size.width / 2,
+                        height: MediaQuery.of(context).size.width / 2,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 5),
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          image: const DecorationImage(
+                            fit: BoxFit.contain,
+                            image: AssetImage("assets/ZARA.jpg"),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -33,9 +72,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: 100,
-                    ),
                     Text('Zara Dar',
                         style: TextStyle(
                             fontSize: 30,
@@ -77,55 +113,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               )
             ],
           ),
-          CustomPaint(
-            painter: HeaderCurvedContainer(),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "@ZARA",
-                  style: TextStyle(
-                      fontSize: 35,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                width: MediaQuery.of(context).size.width / 2,
-                height: MediaQuery.of(context).size.width / 2,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 5),
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  image: const DecorationImage(
-                    fit: BoxFit.contain,
-                    image: AssetImage("assets/ZARA.jpg"),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 270, left: 184),
-            child: CircleAvatar(
-              backgroundColor: Colors.black54,
-              child: IconButton(
-                  icon: const Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {}),
-            ),
-          )
         ],
       ),
     );
