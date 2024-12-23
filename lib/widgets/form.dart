@@ -57,6 +57,10 @@ class _EventFormState extends State<EventForm> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Event created successfully')),
         );
+
+        final count = pref.getInt('stats_hosted') ?? 0;
+        final int newCount = count + 1;
+        await pref.setInt('stats_hosted', newCount);
         Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
