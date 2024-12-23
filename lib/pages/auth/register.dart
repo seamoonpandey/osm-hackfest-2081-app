@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:community_connect/constant.dart';
 import 'package:community_connect/pages/auth/login.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -15,6 +19,44 @@ class _RegisterState extends State<Register> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isPasswordVisible = false;
+
+  Future<void> _register() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final response = await http.post(
+          Uri.parse('$API_URL/auth/register'),
+          body: jsonEncode({
+            'email': _emailController.text,
+            'password': _passwordController.text,
+            'name': _nameController.text,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ).timeout(const Duration(seconds: 10));
+
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Registration Successful')),
+          );
+
+          // Optionally, navigate to the home screen
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return const Login();
+          }));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login Failed: ${response.body}')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +207,7 @@ class _RegisterState extends State<Register> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Handle successful registration
+                    _register();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Registration Successful')),
                     );
