@@ -77,39 +77,47 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff6f6f6),
+      backgroundColor: const Color(0xff555555),
       appBar: _currentIndex != 3
-          ? AppBar(
-              backgroundColor: const Color(0xff555555),
-              foregroundColor: Colors.white,
-              title: [
-                const Text(
-                  'Community Connect',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                const Text(
-                  'Events',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                const Text(
-                  'Local Leaderboard',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                null,
-              ][_currentIndex],
-              actions: [
-                if (_currentIndex == 1 || _currentIndex == 0)
-                  IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const EventForm(),
-                        ),
-                      );
-                    },
+          ? PreferredSize(
+              preferredSize: const Size.fromHeight(80.0),
+              child: AppBar(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(100),
                   ),
-              ],
+                ),
+                backgroundColor: const Color(0xff555555),
+                foregroundColor: Colors.white,
+                title: [
+                  const Text(
+                    'Community Connect',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  ),
+                  const Text(
+                    'Events',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  ),
+                  const Text(
+                    'Local Leaderboard',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  ),
+                  null,
+                ][_currentIndex],
+                actions: [
+                  if (_currentIndex == 1 || _currentIndex == 0)
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const EventForm(),
+                          ),
+                        );
+                      },
+                    ),
+                ],
+              ),
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(
@@ -135,7 +143,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: _pages[_currentIndex],
+      body: Container(
+        color: const Color(0xfff6f6f6),
+        child: _pages[_currentIndex],
+      ),
     );
   }
 }
