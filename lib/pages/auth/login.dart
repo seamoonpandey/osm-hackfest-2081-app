@@ -20,6 +20,22 @@ class _LoginState extends State<Login> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return const HomeScreen();
+      }));
+    }
+  }
+
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       try {
