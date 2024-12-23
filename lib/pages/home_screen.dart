@@ -80,24 +80,35 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xfff6f6f6),
       appBar: _currentIndex != 3
           ? AppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: const Color(0xff555555),
+              foregroundColor: Colors.white,
               title: [
-                const Text('Community Connect'),
-                const Text('Events'),
-                const Text('Local Leaderboard'),
+                const Text(
+                  'Community Connect',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                const Text(
+                  'Events',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                const Text(
+                  'Local Leaderboard',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
                 null,
               ][_currentIndex],
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const EventForm(),
-                      ),
-                    );
-                  },
-                ),
+                if (_currentIndex == 1 || _currentIndex == 0)
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const EventForm(),
+                        ),
+                      );
+                    },
+                  ),
               ],
             )
           : null,
